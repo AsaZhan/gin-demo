@@ -3,8 +3,6 @@ package main
 import (
 	"gin-demo/server/controller/impl"
 	"github.com/gin-gonic/gin"
-	"io"
-	"os"
 )
 
 var testController = impl.TestController{}
@@ -17,15 +15,20 @@ func setupEngine() *gin.Engine {
 	// gin.DisableConsoleColor()
 
 	// 记录到文件
-	_ = os.Mkdir("log", 0777)
-	f, _ := os.Create("log/gin.log")
-	gin.DefaultWriter = io.MultiWriter(f)
+	//_ = os.Mkdir("log", 0777)
+	//f, _ := os.Create("log/gin.log")
+	//gin.DefaultWriter = io.MultiWriter(f)
 
 	// 如果需要同时将日志写入文件和控制台，请使用以下代码。
 	//gin.DefaultWriter = io.MultiWriter(f,os.Stdout)
 
 	//使用默认中间件 Logger Recovery
 	r := gin.Default()
+
+	//这玩意影响的是程序启动过程路由绑定的日志，不是调用日志，没啥卵用
+	/*gin.DebugPrintRouteFunc = func(httpMethod, absolutePath, handlerName string, nuHandlers int) {
+		log.Printf("endpoint %v %v %v %v\n", httpMethod, absolutePath, handlerName, nuHandlers)
+	}*/
 
 	return r
 }
