@@ -2,10 +2,7 @@ module gin-demo
 
 go 1.17
 
-require (
-	github.com/gin-gonic/gin v1.7.4
-	go.uber.org/dig v1.17.0
-)
+require github.com/gin-gonic/gin v1.7.4
 
 require (
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
@@ -21,6 +18,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/stretchr/testify v1.8.3 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
+	go.uber.org/dig v1.17.0 // indirect
 	golang.org/x/crypto v0.9.0 // indirect
 	golang.org/x/net v0.10.0 // indirect
 	golang.org/x/sys v0.8.0 // indirect
