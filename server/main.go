@@ -3,20 +3,36 @@ package main
 import (
 	"gin-demo/server/controller/impl"
 	"github.com/gin-gonic/gin"
+	"io"
+	"os"
 )
 
 var testController = impl.TestController{}
 
-func setupRouter() *gin.Engine {
-	// Disable Console Color
+func setupEngine() *gin.Engine {
+	//不使用默认中间件
+	//r := gin.New()
+
+	// 禁用控制台颜色，将日志写入文件时不需要控制台颜色。
 	// gin.DisableConsoleColor()
+
+	// 记录到文件
+	_ = os.Mkdir("log", 0777)
+	f, _ := os.Create("log/gin.log")
+	gin.DefaultWriter = io.MultiWriter(f)
+
+	// 如果需要同时将日志写入文件和控制台，请使用以下代码。
+	//gin.DefaultWriter = io.MultiWriter(f,os.Stdout)
 
 	//使用默认中间件 Logger Recovery
 	r := gin.Default()
 
-	//不使用默认中间件
-	//r := gin.New()
+	return r
+}
 
+func setupRouter() *gin.Engine {
+
+	r := setupEngine()
 	// Ping test
 	r.GET("/ping", testController.Ping)
 
