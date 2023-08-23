@@ -3,6 +3,10 @@ package main
 import (
 	"gin-demo/server/controller/impl"
 	"github.com/gin-gonic/gin"
+	"io"
+	"net/http"
+	"os"
+	"time"
 )
 
 var testController = impl.TestController{}
@@ -14,13 +18,16 @@ func setupEngine() *gin.Engine {
 	// 禁用控制台颜色，将日志写入文件时不需要控制台颜色。
 	// gin.DisableConsoleColor()
 
+	//强制控制台输出日志使用颜色
+	gin.ForceConsoleColor()
+
 	// 记录到文件
-	//_ = os.Mkdir("log", 0777)
-	//f, _ := os.Create("log/gin.log")
+	_ = os.Mkdir("log", 0777)
+	f, _ := os.Create("log/gin.log")
 	//gin.DefaultWriter = io.MultiWriter(f)
 
 	// 如果需要同时将日志写入文件和控制台，请使用以下代码。
-	//gin.DefaultWriter = io.MultiWriter(f,os.Stdout)
+	gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
 
 	//使用默认中间件 Logger Recovery
 	r := gin.Default()
@@ -94,11 +101,24 @@ func setupRouter() *gin.Engine {
 
 	//async
 	r.GET("/long_async", testController.Async)
+
+	r.POST("/map", testController.QueryMap)
 	return r
 }
 
 func main() {
 	r := setupRouter()
 	// Listen and Server in 0.0.0.0:8080
-	r.Run(":8080")
+
+	//自定义http配置
+	s := &http.Server{
+		Addr:         ":8080",
+		Handler:      r,
+		ReadTimeout:  30 * time.Second,
+		WriteTimeout: 30 * time.Second,
+	}
+	_ = s.ListenAndServe()
+
+	//r.Run(":8080")
+	//log.Fatal(autotls.Run(r,"asa1.dev.com"))
 }

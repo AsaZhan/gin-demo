@@ -40,4 +40,6 @@ type TestController interface {
 	TestSecret(c *gin.Context)
 
 	Async(c *gin.Context)
+
+	QueryMap(c *gin.Context)
 }

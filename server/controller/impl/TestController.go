@@ -246,3 +246,20 @@ func mockAsync(chn chan<- string, c *gin.Context) {
 	time.Sleep(5 * time.Second)
 	chn <- inf
 }
+
+//映射查询字符串或表单参数,映射为map
+func (controller *TestController) QueryMap(c *gin.Context) {
+	ids := c.QueryMap("ids")
+	names := c.PostFormMap("names")
+
+	log.Printf("ids: %v; names: %v\n", ids, names)
+	c.JSON(http.StatusOK, login.Response{
+		Message: "Success",
+		Status:  "OK",
+		Secret:  nil,
+	})
+}
+
+func (controller TestController) QueryArray(c *gin.Context) {
+
+}
