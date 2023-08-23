@@ -9,3 +9,7 @@ go mod vendor
 docker build -t gin-demo:$tag .
 
 rm -rf vendor
+
+./start.sh $tag
+
+set +x

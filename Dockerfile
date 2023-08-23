@@ -2,7 +2,7 @@ FROM golang:1.18.2-alpine3.16 as builder
 
 COPY . /gin-demo
 WORKDIR /gin-demo
-RUN go build --mod=vendor -o gin-demo server/main.go
+RUN go build --mod=vendor -ldflags "-s -w" -o gin-demo server/main.go
 
 FROM alpine:3.16
 COPY --from=builder /gin-demo/gin-demo /usr/local/bin/
