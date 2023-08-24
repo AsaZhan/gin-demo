@@ -42,4 +42,6 @@ type TestController interface {
 	Async(c *gin.Context)
 
 	QueryMap(c *gin.Context)
+
+	GetAndSetCookie(c *gin.Context)
 }

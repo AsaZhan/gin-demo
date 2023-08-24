@@ -260,6 +260,15 @@ func (controller *TestController) QueryMap(c *gin.Context) {
 	})
 }
 
-func (controller TestController) QueryArray(c *gin.Context) {
-
+func (controller TestController) GetAndSetCookie(c *gin.Context) {
+	cookie, err := c.Cookie("DataSet")
+	if err != nil {
+		log.Println("Set Cookie...")
+		c.SetCookie("DataSet", time.Now().String(), 300, "/", "localhost", false, true)
+	}
+	c.JSON(http.StatusOK, login.Response{
+		Message: "Success",
+		Status:  "OK",
+		Secret:  cookie,
+	})
 }

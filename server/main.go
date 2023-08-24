@@ -103,6 +103,8 @@ func setupRouter() *gin.Engine {
 	r.GET("/long_async", testController.Async)
 
 	r.POST("/map", testController.QueryMap)
+
+	r.POST("cookie", testController.GetAndSetCookie)
 	return r
 }
 
