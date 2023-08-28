@@ -104,7 +104,10 @@ func setupRouter() *gin.Engine {
 
 	r.POST("/map", testController.QueryMap)
 
-	r.POST("cookie", testController.GetAndSetCookie)
+	r.POST("/cookie", testController.GetAndSetCookie)
+
+	//Schedule
+	r.GET("/schedule", testController.Schedule)
 	return r
 }
 

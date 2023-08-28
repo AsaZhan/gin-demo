@@ -44,4 +44,6 @@ type TestController interface {
 	QueryMap(c *gin.Context)
 
 	GetAndSetCookie(c *gin.Context)
+
+	Schedule(c *gin.Context)
 }

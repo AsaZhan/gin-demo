@@ -272,3 +272,15 @@ func (controller TestController) GetAndSetCookie(c *gin.Context) {
 		Secret:  cookie,
 	})
 }
+
+func (controller TestController) Schedule(c *gin.Context) {
+	go mockScheduleTask()
+	c.String(http.StatusOK, "Success")
+}
+
+func mockScheduleTask() {
+	for i := 0; i < 10; i++ {
+		time.Sleep(2 * time.Second)
+		log.Println("Schedule task execute ", i)
+	}
+}
