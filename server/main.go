@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"gin-demo/server/app"
 	"gin-demo/server/controller/impl"
 	"github.com/gin-gonic/gin"
 	"io"
@@ -108,16 +110,23 @@ func setupRouter() *gin.Engine {
 
 	//Schedule
 	r.GET("/schedule", testController.Schedule)
+
+	//query user
+	r.GET("/getUser", testController.QueryUser)
 	return r
 }
 
 func main() {
+	err := app.InitConfigJSON("resources/config/app.json")
+	if err != nil {
+		panic(err)
+	}
 	r := setupRouter()
 	// Listen and Server in 0.0.0.0:8080
 
 	//自定义http配置
 	s := &http.Server{
-		Addr:         ":8080",
+		Addr:         fmt.Sprintf(":%d", app.Cfg.ServerConfig.Port),
 		Handler:      r,
 		ReadTimeout:  30 * time.Second,
 		WriteTimeout: 30 * time.Second,

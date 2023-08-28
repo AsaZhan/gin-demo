@@ -1,4 +1,4 @@
-package login
+package models
 
 type LoginForm struct {
 	User     string `form:"user" binding:"required"`

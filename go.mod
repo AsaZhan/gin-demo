@@ -2,7 +2,10 @@ module gin-demo
 
 go 1.17
 
-require github.com/gin-gonic/gin v1.7.4
+require (
+	github.com/gin-gonic/gin v1.7.4
+	github.com/go-sql-driver/mysql v1.7.1
+)
 
 require (
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect

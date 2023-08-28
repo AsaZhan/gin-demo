@@ -1,0 +1,12 @@
+{
+  "ServerConfig": {
+    "Port": 8080
+  },
+  "DataSourceConfig": {
+    "Username": "root",
+    "Password": "root@123",
+    "Database": "example",
+    "Port": 3306,
+    "IP": "127.0.0.1"
+  }
+}

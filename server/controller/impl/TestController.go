@@ -2,7 +2,8 @@ package impl
 
 import (
 	"fmt"
-	"gin-demo/server/models/login"
+	"gin-demo/server/app"
+	"gin-demo/server/models"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"log"
@@ -13,9 +14,9 @@ import (
 
 //var db = make(map[string]string)
 var db = map[string]interface{}{
-	"foo":    login.User{Value: "foo", Email: "foo@bar.com", Phone: "123433"},
-	"austin": login.User{Value: "austin", Email: "austin@example.com", Phone: "666"},
-	"lena":   login.User{Value: "lena", Email: "lena@guapa.com", Phone: "523443"},
+	"foo":    models.User{Value: "foo", Email: "foo@bar.com", Phone: "123433"},
+	"austin": models.User{Value: "austin", Email: "austin@example.com", Phone: "666"},
+	"lena":   models.User{Value: "lena", Email: "lena@guapa.com", Phone: "523443"},
 }
 
 type TestController struct{}
@@ -43,12 +44,12 @@ func (controller *TestController) GetUserValue(c *gin.Context) {
 func (controller *TestController) TestAuth(c *gin.Context) {
 	user := c.MustGet(gin.AuthUserKey).(string)
 	// Parse JSON
-	request := login.User{}
+	request := models.User{}
 	err := c.Bind(&request)
 
 	if err == nil {
 		db[user] = request.Value
-		response := login.Response{Message: "success", Status: "ok"}
+		response := models.Response{Message: "success", Status: "ok"}
 		fmt.Printf("%+v\n", db)
 		c.JSON(http.StatusOK, response)
 	}
@@ -58,16 +59,16 @@ func (controller *TestController) TestAuth(c *gin.Context) {
 func (controller *TestController) TestSecret(c *gin.Context) {
 	user := c.MustGet(gin.AuthUserKey).(string)
 	secret, ok := db[user]
-	response := login.Response{}
+	response := models.Response{}
 	if ok {
-		response = login.Response{
+		response = models.Response{
 			Message: "Success",
 			Status:  "ok",
 			Secret:  secret,
 		}
 
 	} else {
-		response = login.Response{
+		response = models.Response{
 			Message: "Success",
 			Status:  "ok",
 			Secret:  "no secret",
@@ -96,14 +97,14 @@ func (controller *TestController) CallBack(c *gin.Context) {
 }
 
 func (controller *TestController) BindJSON(c *gin.Context) {
-	var form login.LoginForm
+	var form models.LoginForm
 	// 你可以使用显式绑定声明绑定 multipart form：
 	//c.ShouldBindWith(&form, binding.Form)
 
 	//⬇ 绑定请求参数为JSON类型或结构体，请求参数位于body️
 	//if c.ShouldBind(&form) == nil {
 	if c.ShouldBindWith(&form, binding.JSON) == nil {
-		response := login.Response{Message: "success", Status: "ok"}
+		response := models.Response{Message: "success", Status: "ok"}
 		if form.User == "admin" && form.Password == "adminPw" {
 			response.Status = "you are logged in"
 			c.JSON(http.StatusOK, response)
@@ -170,7 +171,7 @@ func (controller *TestController) SomeYAML(c *gin.Context) {
 
 func (controller *TestController) SomeProtoBuf(c *gin.Context) {
 	label := "label"
-	data := &login.ProtoBufExample{
+	data := &models.ProtoBufExample{
 		Label: label,
 		Resp:  []int64{int64(1), int64(2)},
 	}
@@ -234,7 +235,7 @@ func (controller *TestController) Async(c *gin.Context) {
 	chn := make(chan string)
 	go mockAsync(chn, c)
 	log.Println(<-chn)
-	c.JSON(http.StatusOK, login.Response{
+	c.JSON(http.StatusOK, models.Response{
 		Message: "Success",
 		Status:  "OK",
 		Secret:  nil,
@@ -253,7 +254,7 @@ func (controller *TestController) QueryMap(c *gin.Context) {
 	names := c.PostFormMap("names")
 
 	log.Printf("ids: %v; names: %v\n", ids, names)
-	c.JSON(http.StatusOK, login.Response{
+	c.JSON(http.StatusOK, models.Response{
 		Message: "Success",
 		Status:  "OK",
 		Secret:  nil,
@@ -266,13 +267,14 @@ func (controller TestController) GetAndSetCookie(c *gin.Context) {
 		log.Println("Set Cookie...")
 		c.SetCookie("DataSet", time.Now().String(), 300, "/", "localhost", false, true)
 	}
-	c.JSON(http.StatusOK, login.Response{
+	c.JSON(http.StatusOK, models.Response{
 		Message: "Success",
 		Status:  "OK",
 		Secret:  cookie,
 	})
 }
 
+//async task
 func (controller TestController) Schedule(c *gin.Context) {
 	go mockScheduleTask()
 	c.String(http.StatusOK, "Success")
@@ -283,4 +285,34 @@ func mockScheduleTask() {
 		time.Sleep(2 * time.Second)
 		log.Println("Schedule task execute ", i)
 	}
+}
+
+//connect to database
+func (controller *TestController) QueryUser(c *gin.Context) {
+	var exampleUser models.ExampleUser
+	//defer db.Close()
+	response := models.Response{
+		Status:  "OK",
+		Message: "Fail",
+		Secret:  "",
+	}
+
+	db, err := ConnectToDb(*app.Cfg)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	id := c.Query("id")
+	row := db.QueryRow("select * from example_user eu where eu.id = ?", id)
+	err = row.Scan(&exampleUser.Id, &exampleUser.Username, &exampleUser.Email)
+	if err != nil {
+		log.Println(err.Error())
+		c.JSON(http.StatusNotFound, response)
+		return
+	}
+	response.Message = "Success"
+	response.Secret = exampleUser
+	c.JSON(http.StatusOK, response)
 }
