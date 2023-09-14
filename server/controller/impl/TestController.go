@@ -294,7 +294,7 @@ func (controller *TestController) QueryUser(c *gin.Context) {
 	response := models.Response{
 		Status:  "OK",
 		Message: "Fail",
-		Secret:  "",
+		Secret:  &exampleUser,
 	}
 
 	db, err := ConnectToDb(*app.Cfg)
@@ -313,6 +313,6 @@ func (controller *TestController) QueryUser(c *gin.Context) {
 		return
 	}
 	response.Message = "Success"
-	response.Secret = exampleUser
+	//response.Secret = exampleUser
 	c.JSON(http.StatusOK, response)
 }
